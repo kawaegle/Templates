@@ -1,0 +1,10 @@
+{
+    "person1": {
+      "name": "World",
+      "welcome": "Hello world!"
+    },
+    "person2": {
+      "name": "rhum",
+      "welcome": "Give me a bottle of rhum!"
+    }
+  }
