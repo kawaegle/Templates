@@ -1,0 +1,85 @@
+##
+## EPITECH PROJECT, date
+## makefile
+## File description:
+## padoru
+##
+CC		:=	gcc
+
+NAME		=	name
+
+SRC_DIR		:=	src
+SRC		:=	$(SRC_DIR)/main.c\
+
+TEST_DIR	:=	tests
+SRC_TEST	:=	$(TEST_DIR)/tests_name.c\
+
+OBJ_DIR		:=	.obj
+INCLUDE_DIR 	:=	include
+LIB 	:=	
+
+CFLAGS		:=	-Wall -Wextra -Wpedantic -Wundef
+CFLAGS		+=	-iquote $(INCLUDE_DIR)
+
+TEST_FLAGS := -l criterion --coverage -g2
+
+DEBUG_FLAGS := -ggdb -g2 $(CFLAGS) -fanalyzer
+
+LDFLAGS :=  $(LIB)
+
+OBJ	:= $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC))
+
+OBJ_DEBUG := $(patsubst %.c,$(OBJ_DIR)/%_debug.o,$(SRC))
+
+mains	:=	$(OBJ)/$(SRC_DIR)/main.o
+OBJ_TEST 	:= $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRC_TEST))
+OBJ_TEST 	+= $(filter-out $(mains), $(OBJ))
+
+$(OBJ_DIR)/%.o: %.c
+	@ echo -e "$(OK_COL){+} Build $<$(NO_COL)"
+	@ mkdir -p $(@D)
+	@ $(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJ_DIR)/%_debug.o: %.c
+	@ echo -e "$(OK_COL){+} Build $<$(NO_COL)"
+	@ mkdir -p $(@D)
+	@ $(CC) $(DEBUG_FLAGS) -c -o $@ $<
+
+NO_COL=\x1b[0m
+OK_COL=\x1b[32;01m
+ERR_COL=\x1b[31;01m
+WARN_COL=\x1b[33;01m
+
+all: $(NAME)
+
+$(NAME): $(OBJ)
+	@ echo -e "$(OK_COL){+} Link $@$(NO_COL)"
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
+
+debug: $(OBJ_DEBUG)
+	@ echo -e "$(OK_COL){+} Link $(NAME)_debug$(NO_COL)"
+	@ $(CC) $(OBJ_DEBUG) $(CFLAGS) -o $(NAME)_debug $(LDFLAGS)
+
+clean:
+	@ make clean -C $(LIB_DIR)
+	@ echo -e "$(ERR_COL){-} Remove $(OBJ) $(OBJ_TEST)\
+		$(OBJ_DEBUG)$(NO_COL)"
+	@ rm -rf $(OBJ_DIR) *.gcda *.gcno vgcore*
+
+fclean: clean
+	@ make fclean -C $(LIB_DIR)
+	@ echo -e "$(ERR_COL){-} Remove $(NAME) $(NAME)_debug test$(NO_COL)"
+	@ rm -rf $(NAME) test $(NAME)_debug
+
+unit_tests: fclean libmy $(OBJ) $(OBJ_TEST)
+	@ $(CC) -o test $(OBJ_TEST) $(TEST_FLAGS) $(LDFLAGS)
+
+tests_run: unit_tests
+	@ ./test
+
+run: $(NAME)
+	@ ./$(NAME)
+
+re: clean all
+
+.PHONY: all debug clean fclean unit_tests tests_run run re
