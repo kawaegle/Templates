@@ -1,0 +1,21 @@
+## this is a comment
+
+/# this
+is
+a
+comment
+block
+#/
+
+## --argument-- need to be variable
+
+## the first line need to be a 'Client counter' instruction
+NB_CLIENT 2 ## need to be equal or less than the total led client
+FULL_LED --color-- ## set all led with a color given on RGB hex or Name
+SET_LED --led_id or scope led-- --color-- ## set a led or a scope of led with a given color
+/# eg
+SET_LED 5 RED ## set only the 6th led on red color
+SET_LED 0-5 PURPLE ## set the led 0 1 2 3 4 5 on PURPLE
+#/
+DELAY --time in sec-- ## wait a certain time before continue
+
